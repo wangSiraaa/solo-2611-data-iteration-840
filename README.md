@@ -9,6 +9,7 @@ archive_handoff/
   rules_service.py   # 规则/事件/保全目录 + 资格计算 + 产品的冻结与落盘
   handoff_service.py # 整案移交仓：保管责任、整案校验、准备/确认/计划、对账
   materials.py       # 只读导入 materials/751 或任意同布局目录
+  ballots.py         # 排序选票勘误、裁决留痕、精确分数转移票计票
   scenario.py        # 文档化 751 走查、operations 回放、200/10/500/100 规模生成
   cli.py             # 命令行
 tests/               # unittest（无需 pytest）
@@ -95,6 +96,55 @@ python3 -m archive_handoff.cli --data artifacts/scale scale
 
 移交请求是“公开写全”的普通 JSON，可存成文件再用 `requests --file` 实际导入。
 
+## 选票勘误与转移票计票（选票侧，独立于移交仓）
+
+`materials/ballots` 是另一份虚构材料：一次社团理事选举的纸本排序选票。
+两名录入员把同一张稳定原票抄成名次格（每格可无人、一人或多人），即使落到
+不同案卷也按 `original_id` 合并，**同一原票只算一次**。
+
+整理规则（`normalise_grid`）：跳过空格；同一人再次**单独**出现只保留首次；
+首次出现多人同格时在该格**之前**截止。两稿整理后序列相同才采入；不同则须
+馆员给出可追溯裁决（`adjudicator` + `reason`）决定有效序列或作废。
+裁决是**追加式修订**，旧修订可复查，导出时并可按 `--ruling-revision` 固定旧裁决。
+保留空序列与有第一选择票数，并列出争议票。
+
+计票（`transfer_count`）只吃**独立导出的选票**，与资料库无关：N=起初有有效
+第一选择的票数，当选额 `floor(N/(席数+1))+1`。逐轮给最高分仍在竞争者的选择；
+有人达额时只选总重最高者（同重按优先序靠前），留足当选额，其余按同一比率
+转出盈余；无人达额则淘汰总重最低者（同重淘汰优先序靠后）并转全重。无后继的
+权重计耗尽。剩余人数恰等于未填席数时直接当选。所有数值用 `Fraction` 精确交付。
+
+演示三种结果：原抄本 A>B → A、B 当选；勘正后 A>C、优先序 A,C,B → A 先达额
+（4 票各转 1/4 给 C）→ C 当选，B 淘汰时 2 票耗尽；同一勘正选票改用优先序
+A,B,C → B 当选。并覆盖同名次票（O8）与一次转出耗尽（B 的 2 票无后继）。
+
+```bash
+DATA=artifacts/ballots
+
+# 导入两稿、裁决、选票集合；查看整理结果、统计与争议票
+python3 -m archive_handoff.cli --data $DATA ballot-import --materials materials/ballots
+python3 -m archive_handoff.cli --data $DATA ballot-reconcile
+
+# 导出可独立复算的选票（原抄本 / 勘正后 / 固定旧裁决 rev1）
+python3 -m archive_handoff.cli --data $DATA ballot-export --scope drafts \
+  --set seven --out ballots_original.json
+python3 -m archive_handoff.cli --data $DATA ballot-export --scope effective \
+  --set seven --out ballots_corrected.json
+python3 -m archive_handoff.cli --data $DATA ballot-export --scope effective \
+  --set seven --ruling-revision 1 --out ballots_r1.json
+
+# 从导出的 JSON 独立计票（不读取资料库）
+python3 -m archive_handoff.cli --data $DATA ballot-count \
+  --ballots ballots_original.json --seats 2 --priority A,B,C
+python3 -m archive_handoff.cli --data $DATA ballot-count \
+  --ballots ballots_corrected.json --seats 2 --priority A,C,B
+python3 -m archive_handoff.cli --data $DATA ballot-count \
+  --ballots ballots_corrected.json --seats 2 --priority A,B,C
+
+# 端到端重建 + 三种计票 + 独立复算（写 artifacts/ballots/*.json）
+python3 -m archive_handoff.cli --data $DATA ballot-demo --materials materials/ballots
+```
+
 ## 测试
 
 ```bash
@@ -103,4 +153,6 @@ python3 -m unittest discover -s tests -v
 
 覆盖：日期算术与边界、缺触发待定、保全半开区间与不暂停时钟、多阻止原因去重、
 批次原子拒绝、产品冻结、整案校验、部分拒绝、复读/异文、保管链与重开对账、
-751 文档化走查、operations 回放、200/10/500/100 规模。
+751 文档化走查、operations 回放、200/10/500/100 规模；选票侧覆盖名次格整理、
+跨案卷同票去重、裁决修订与历史留痕、空序列与第一选择计数、争议票、
+三种计票结果、精确分数盈余转移、同重破同与转出耗尽、独立复算。

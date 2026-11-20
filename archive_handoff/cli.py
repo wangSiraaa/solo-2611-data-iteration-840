@@ -29,6 +29,8 @@ from .handoff_service import HandoffRepo
 from .materials import import_materials
 from .models import RejectError
 from .rules_service import RuleEventStore
+from .ballots import (BallotStore, load_ballot_materials, open_ballot_store,
+                      run_ballot_demo, transfer_count)
 
 
 def _paths(data_dir: str) -> tuple[str, str]:
@@ -343,6 +345,84 @@ def cmd_requests(args) -> None:
         raise SystemExit(2)
 
 
+def _parse_priority(text: str) -> list[str]:
+    return [x.strip() for x in text.split(",") if x.strip()]
+
+
+def cmd_ballot_import(args) -> None:
+    """Import transcriptions, rulings and named ballot sets."""
+    store = open_ballot_store(args.data)
+    raw = load_ballot_materials(args.materials)
+    try:
+        out = {}
+        if not args.kind or args.kind == "transcriptions":
+            out["transcriptions"] = store.import_transcriptions(raw["transcriptions"])
+        if not args.kind or args.kind == "rulings":
+            out["rulings"] = store.import_rulings(raw["rulings"])
+        if not args.kind or args.kind == "sets":
+            out["sets"] = store.import_sets(raw["sets"])
+    except RejectError as exc:
+        store.close()
+        _dump({"accepted": False, "code": exc.code, "detail": exc.detail})
+        raise SystemExit(2)
+    store.close()
+    _dump({"accepted": True, **out})
+
+
+def cmd_ballot_reconcile(args) -> None:
+    """Show per-ballot status, counts and the list of disputed ballots."""
+    store = open_ballot_store(args.data)
+    result = store.reconcile()
+    store.close()
+    _dump(result)
+
+
+def cmd_ballot_export(args) -> None:
+    """Export ballot sequences as a standalone JSON file for recounting."""
+    store = open_ballot_store(args.data)
+    try:
+        result = store.export(
+            scope=args.scope,
+            set_id=args.set_name,
+            ruling_revision=args.ruling_revision,
+        )
+    except RejectError as exc:
+        store.close()
+        _dump({"accepted": False, "code": exc.code, "detail": exc.detail})
+        raise SystemExit(2)
+    store.close()
+    payload = json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    if args.out:
+        os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
+        with open(args.out, "w", encoding="utf-8") as fh:
+            fh.write(payload)
+        _dump({"exported": args.out, "stats": result["stats"]})
+    else:
+        sys.stdout.write(payload)
+
+
+def cmd_ballot_count(args) -> None:
+    """Count seats from an exported ballots file (no store needed)."""
+    with open(args.ballots, encoding="utf-8") as fh:
+        exported = json.load(fh)
+    priority = _parse_priority(args.priority)
+    try:
+        result = transfer_count(exported["ballots"], args.seats, priority)
+    except RejectError as exc:
+        _dump({"accepted": False, "code": exc.code, "detail": exc.detail})
+        raise SystemExit(2)
+    result["source"] = os.path.abspath(args.ballots)
+    _dump(result)
+
+
+def cmd_ballot_demo(args) -> None:
+    """Reconcile the fictional ballots and run the three documented counts."""
+    result = run_ballot_demo(args.data, materials=args.materials)
+    _dump(result)
+    if not result.get("ok"):
+        raise SystemExit(1)
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="archive_handoff")
     p.add_argument("--data", default="artifacts/demo", help="data directory")
@@ -424,6 +504,32 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--file", required=True)
     sp.add_argument("--allow-rejects", action="store_true")
     sp.set_defaults(func=cmd_requests)
+
+    sp = sub.add_parser("ballot-import")
+    sp.add_argument("--materials", default="materials/ballots")
+    sp.add_argument("--kind", choices=["transcriptions", "rulings", "sets"],
+                    help="limit to one kind (default: all)")
+    sp.set_defaults(func=cmd_ballot_import)
+
+    sp = sub.add_parser("ballot-reconcile")
+    sp.set_defaults(func=cmd_ballot_reconcile)
+
+    sp = sub.add_parser("ballot-export")
+    sp.add_argument("--scope", choices=["drafts", "effective"], default="effective")
+    sp.add_argument("--set", dest="set_name")
+    sp.add_argument("--ruling-revision", type=int)
+    sp.add_argument("--out")
+    sp.set_defaults(func=cmd_ballot_export)
+
+    sp = sub.add_parser("ballot-count")
+    sp.add_argument("--ballots", required=True)
+    sp.add_argument("--seats", type=int, required=True)
+    sp.add_argument("--priority", required=True, help="complete order, e.g. A,C,B")
+    sp.set_defaults(func=cmd_ballot_count)
+
+    sp = sub.add_parser("ballot-demo")
+    sp.add_argument("--materials", default="materials/ballots")
+    sp.set_defaults(func=cmd_ballot_demo)
     return p
 
 

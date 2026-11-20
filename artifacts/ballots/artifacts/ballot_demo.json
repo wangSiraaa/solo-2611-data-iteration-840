@@ -1,0 +1,556 @@
+{
+  "data_dir": "/workspace/artifacts/ballots",
+  "expected": {
+    "corrected_ABC_elects_A_B": true,
+    "corrected_ACB_elects_A_C": true,
+    "corrected_ACB_has_exhaustion": true,
+    "corrected_ACB_retains_quota": true,
+    "dedup_by_original": true,
+    "dispute_O10_resolved": true,
+    "dispute_O11_spoiled": true,
+    "duplicate_kept_once": true,
+    "empty_sequence_retained": true,
+    "independent_recount_matches": true,
+    "old_ruling_readable": true,
+    "original_elects_A_B": true,
+    "same_rank_truncated": true,
+    "with_first_choice_retained": true
+  },
+  "materials": "/workspace/materials/ballots",
+  "ok": true,
+  "steps": [
+    {
+      "result": {
+        "rulings": {
+          "accepted": 7,
+          "changed": true
+        },
+        "sets": {
+          "accepted": 1,
+          "changed": true
+        },
+        "transcriptions": {
+          "accepted": 24,
+          "changed": true
+        }
+      },
+      "step": "import"
+    },
+    {
+      "disputed": [
+        {
+          "draft_sequences": {
+            "乙": [
+              "A",
+              "C"
+            ],
+            "甲": [
+              "A",
+              "B"
+            ]
+          },
+          "effective_sequence": [
+            "A",
+            "C"
+          ],
+          "original_id": "O10",
+          "ruling_revision": 2,
+          "status": "adjudicated"
+        },
+        {
+          "draft_sequences": {
+            "乙": [
+              "C"
+            ],
+            "甲": [
+              "B"
+            ]
+          },
+          "effective_sequence": null,
+          "original_id": "O11",
+          "ruling_revision": 1,
+          "status": "spoiled"
+        }
+      ],
+      "stats": {
+        "adjudicated": 5,
+        "adopted_by_agreement": 6,
+        "disputed": 0,
+        "drafts": 24,
+        "empty_sequence": 1,
+        "incomplete": 0,
+        "originals": 12,
+        "spoiled": 1,
+        "with_first_choice": 10
+      },
+      "step": "reconcile"
+    },
+    {
+      "drafts": [
+        [
+          "A"
+        ],
+        [
+          "A"
+        ]
+      ],
+      "effective": [
+        "A"
+      ],
+      "note": "multi-name cell truncated before that cell",
+      "original_id": "O8",
+      "step": "same_rank_ballot"
+    },
+    {
+      "effective": [
+        "A",
+        "B",
+        "C"
+      ],
+      "note": "repeated standalone name kept once",
+      "original_id": "O9",
+      "step": "duplicate_name_ballot"
+    },
+    {
+      "effective": [],
+      "original_id": "O12",
+      "step": "empty_ballot"
+    },
+    {
+      "history": [
+        {
+          "adjudicator": "L-MIRA",
+          "decision": "valid",
+          "revision": 1,
+          "sequence": [
+            "A",
+            "B"
+          ]
+        },
+        {
+          "adjudicator": "L-OWEN",
+          "decision": "valid",
+          "revision": 2,
+          "sequence": [
+            "A",
+            "C"
+          ]
+        }
+      ],
+      "original_id": "O10",
+      "step": "historical_ruling"
+    },
+    {
+      "corrected": "artifacts/ballots/artifacts/ballots_corrected.json",
+      "corrected_stats": {
+        "empty_sequence": 0,
+        "excluded": 0,
+        "exported": 7,
+        "with_first_choice": 7
+      },
+      "original": "artifacts/ballots/artifacts/ballots_original.json",
+      "original_stats": {
+        "empty_sequence": 0,
+        "excluded": 0,
+        "exported": 7,
+        "with_first_choice": 7
+      },
+      "step": "export"
+    },
+    {
+      "elected": [
+        "A",
+        "B"
+      ],
+      "quota": "3",
+      "rounds": [
+        {
+          "action": "elect",
+          "candidate": "A",
+          "continuing": [
+            "A",
+            "B",
+            "C"
+          ],
+          "elected": [
+            "A"
+          ],
+          "exhausted": "0",
+          "retained": "3",
+          "round": 1,
+          "totals": {
+            "A": "4",
+            "B": "2",
+            "C": "1"
+          },
+          "transferred": "1",
+          "transfers": [
+            {
+              "ballot_id": "O1",
+              "exhausted": false,
+              "from": "A",
+              "to": "B",
+              "value": "1/4"
+            },
+            {
+              "ballot_id": "O2",
+              "exhausted": false,
+              "from": "A",
+              "to": "B",
+              "value": "1/4"
+            },
+            {
+              "ballot_id": "O3",
+              "exhausted": false,
+              "from": "A",
+              "to": "B",
+              "value": "1/4"
+            },
+            {
+              "ballot_id": "O4",
+              "exhausted": false,
+              "from": "A",
+              "to": "B",
+              "value": "1/4"
+            }
+          ]
+        },
+        {
+          "action": "elect",
+          "candidate": "B",
+          "continuing": [
+            "B",
+            "C"
+          ],
+          "elected": [
+            "A",
+            "B"
+          ],
+          "exhausted": "0",
+          "retained": "3",
+          "round": 2,
+          "totals": {
+            "B": "3",
+            "C": "1"
+          },
+          "transferred": "0",
+          "transfers": [
+            {
+              "ballot_id": "O1",
+              "exhausted": false,
+              "from": "B",
+              "to": null,
+              "value": "0"
+            },
+            {
+              "ballot_id": "O2",
+              "exhausted": false,
+              "from": "B",
+              "to": null,
+              "value": "0"
+            },
+            {
+              "ballot_id": "O3",
+              "exhausted": false,
+              "from": "B",
+              "to": null,
+              "value": "0"
+            },
+            {
+              "ballot_id": "O4",
+              "exhausted": false,
+              "from": "B",
+              "to": null,
+              "value": "0"
+            },
+            {
+              "ballot_id": "O5",
+              "exhausted": false,
+              "from": "B",
+              "to": null,
+              "value": "0"
+            },
+            {
+              "ballot_id": "O6",
+              "exhausted": false,
+              "from": "B",
+              "to": null,
+              "value": "0"
+            }
+          ]
+        }
+      ],
+      "step": "count_original"
+    },
+    {
+      "elected": [
+        "A",
+        "C"
+      ],
+      "exhausted_total": "2",
+      "quota": "3",
+      "rounds": [
+        {
+          "action": "elect",
+          "candidate": "A",
+          "continuing": [
+            "A",
+            "C",
+            "B"
+          ],
+          "elected": [
+            "A"
+          ],
+          "exhausted": "0",
+          "retained": "3",
+          "round": 1,
+          "totals": {
+            "A": "4",
+            "B": "2",
+            "C": "1"
+          },
+          "transferred": "1",
+          "transfers": [
+            {
+              "ballot_id": "O1",
+              "exhausted": false,
+              "from": "A",
+              "to": "C",
+              "value": "1/4"
+            },
+            {
+              "ballot_id": "O2",
+              "exhausted": false,
+              "from": "A",
+              "to": "C",
+              "value": "1/4"
+            },
+            {
+              "ballot_id": "O3",
+              "exhausted": false,
+              "from": "A",
+              "to": "C",
+              "value": "1/4"
+            },
+            {
+              "ballot_id": "O4",
+              "exhausted": false,
+              "from": "A",
+              "to": "C",
+              "value": "1/4"
+            }
+          ]
+        },
+        {
+          "action": "eliminate",
+          "candidate": "B",
+          "continuing": [
+            "C",
+            "B"
+          ],
+          "elected": [
+            "A"
+          ],
+          "exhausted": "2",
+          "retained": "0",
+          "round": 2,
+          "totals": {
+            "B": "2",
+            "C": "2"
+          },
+          "transferred": "2",
+          "transfers": [
+            {
+              "ballot_id": "O5",
+              "exhausted": true,
+              "from": "B",
+              "to": null,
+              "value": "1"
+            },
+            {
+              "ballot_id": "O6",
+              "exhausted": true,
+              "from": "B",
+              "to": null,
+              "value": "1"
+            }
+          ]
+        },
+        {
+          "action": "elect_remaining",
+          "candidate": null,
+          "continuing": [
+            "C"
+          ],
+          "elected": [
+            "A",
+            "C"
+          ],
+          "exhausted": "0",
+          "retained": "0",
+          "round": 3,
+          "totals": {
+            "C": "2"
+          },
+          "transferred": "0",
+          "transfers": []
+        }
+      ],
+      "step": "count_corrected_ACB"
+    },
+    {
+      "elected": [
+        "A",
+        "B"
+      ],
+      "exhausted_total": "2",
+      "quota": "3",
+      "rounds": [
+        {
+          "action": "elect",
+          "candidate": "A",
+          "continuing": [
+            "A",
+            "B",
+            "C"
+          ],
+          "elected": [
+            "A"
+          ],
+          "exhausted": "0",
+          "retained": "3",
+          "round": 1,
+          "totals": {
+            "A": "4",
+            "B": "2",
+            "C": "1"
+          },
+          "transferred": "1",
+          "transfers": [
+            {
+              "ballot_id": "O1",
+              "exhausted": false,
+              "from": "A",
+              "to": "C",
+              "value": "1/4"
+            },
+            {
+              "ballot_id": "O2",
+              "exhausted": false,
+              "from": "A",
+              "to": "C",
+              "value": "1/4"
+            },
+            {
+              "ballot_id": "O3",
+              "exhausted": false,
+              "from": "A",
+              "to": "C",
+              "value": "1/4"
+            },
+            {
+              "ballot_id": "O4",
+              "exhausted": false,
+              "from": "A",
+              "to": "C",
+              "value": "1/4"
+            }
+          ]
+        },
+        {
+          "action": "eliminate",
+          "candidate": "C",
+          "continuing": [
+            "B",
+            "C"
+          ],
+          "elected": [
+            "A"
+          ],
+          "exhausted": "2",
+          "retained": "0",
+          "round": 2,
+          "totals": {
+            "B": "2",
+            "C": "2"
+          },
+          "transferred": "2",
+          "transfers": [
+            {
+              "ballot_id": "O1",
+              "exhausted": true,
+              "from": "C",
+              "to": null,
+              "value": "1/4"
+            },
+            {
+              "ballot_id": "O2",
+              "exhausted": true,
+              "from": "C",
+              "to": null,
+              "value": "1/4"
+            },
+            {
+              "ballot_id": "O3",
+              "exhausted": true,
+              "from": "C",
+              "to": null,
+              "value": "1/4"
+            },
+            {
+              "ballot_id": "O4",
+              "exhausted": true,
+              "from": "C",
+              "to": null,
+              "value": "1/4"
+            },
+            {
+              "ballot_id": "O7",
+              "exhausted": true,
+              "from": "C",
+              "to": null,
+              "value": "1"
+            }
+          ]
+        },
+        {
+          "action": "elect_remaining",
+          "candidate": null,
+          "continuing": [
+            "B"
+          ],
+          "elected": [
+            "A",
+            "B"
+          ],
+          "exhausted": "0",
+          "retained": "0",
+          "round": 3,
+          "totals": {
+            "B": "2"
+          },
+          "transferred": "0",
+          "transfers": []
+        }
+      ],
+      "step": "count_corrected_ABC"
+    },
+    {
+      "results": {
+        "corrected_ABC": [
+          "A",
+          "B"
+        ],
+        "corrected_ACB": [
+          "A",
+          "C"
+        ],
+        "original": [
+          "A",
+          "B"
+        ]
+      },
+      "step": "independent_recount"
+    }
+  ]
+}

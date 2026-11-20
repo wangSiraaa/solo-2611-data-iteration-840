@@ -1,0 +1,7 @@
+{"original_id":"O1","revision":1,"decision":"valid","sequence":["A","C"],"adjudicator":"L-OWEN","reason":"原票复核：第二选择为 C，四张同类票统一勘正"}
+{"original_id":"O2","revision":1,"decision":"valid","sequence":["A","C"],"adjudicator":"L-OWEN","reason":"原票复核：第二选择为 C，四张同类票统一勘正"}
+{"original_id":"O3","revision":1,"decision":"valid","sequence":["A","C"],"adjudicator":"L-OWEN","reason":"原票复核：第二选择为 C，四张同类票统一勘正"}
+{"original_id":"O4","revision":1,"decision":"valid","sequence":["A","C"],"adjudicator":"L-OWEN","reason":"原票复核：第二选择为 C，四张同类票统一勘正"}
+{"original_id":"O10","revision":1,"decision":"valid","sequence":["A","B"],"adjudicator":"L-MIRA","reason":"初次覆核：依第一位录入员次序"}
+{"original_id":"O10","revision":2,"decision":"valid","sequence":["A","C"],"adjudicator":"L-OWEN","reason":"再次比对原票：第二格为 C，覆核前裁决保留可查"}
+{"original_id":"O11","revision":1,"decision":"spoiled","adjudicator":"L-MIRA","reason":"同名列涂改无法辨读，作废"}

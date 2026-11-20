@@ -1,0 +1,60 @@
+{
+  "ballots": [
+    {
+      "ballot_id": "O1",
+      "sequence": [
+        "A",
+        "C"
+      ]
+    },
+    {
+      "ballot_id": "O2",
+      "sequence": [
+        "A",
+        "C"
+      ]
+    },
+    {
+      "ballot_id": "O3",
+      "sequence": [
+        "A",
+        "C"
+      ]
+    },
+    {
+      "ballot_id": "O4",
+      "sequence": [
+        "A",
+        "C"
+      ]
+    },
+    {
+      "ballot_id": "O5",
+      "sequence": [
+        "B"
+      ]
+    },
+    {
+      "ballot_id": "O6",
+      "sequence": [
+        "B"
+      ]
+    },
+    {
+      "ballot_id": "O7",
+      "sequence": [
+        "C"
+      ]
+    }
+  ],
+  "excluded": [],
+  "ruling_revision": null,
+  "scope": "effective",
+  "set_id": "seven",
+  "stats": {
+    "empty_sequence": 0,
+    "excluded": 0,
+    "exported": 7,
+    "with_first_choice": 7
+  }
+}
